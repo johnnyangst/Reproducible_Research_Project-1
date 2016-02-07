@@ -83,10 +83,10 @@ sum(is.na(data$steps))
 
 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r, echo = TRUE}
-datacomplete <- data
+datacomplete = data
 nas = is.na(datacomplete$steps)
 avgint  = tapply(datacomplete$steps, datacomplete$interval, mean, na.rm=TRUE, simplify=TRUE)
-datacomplete$steps[nas] <- avgint[as.character(datacomplete$interval[nas])]
+datacomplete$steps[nas] = avgint[as.character(datacomplete$interval[nas])]
 sum(is.na(datacomplete$steps))
 ```
 
@@ -115,3 +115,22 @@ allstepsmedian
 <b>If we impute missing data, both mean and median are the same: 10766.19</b>
 
 ##Are there differences in activity patterns between weekdays and weekends?
+
+Create new columnn, "timeperiod" and set to weekend (Saturday or Sunday) or weekday (Monday thru Friday)
+
+```{r, echo = TRUE}
+library(reshape2)
+library(gridExtra)
+datacomplete <- mutate(datacomplete, timeperiod = ifelse(weekdays(datacomplete$DateTime) == "Saturday" | weekdays(datacomplete$DateTime) == "Sunday", "weekend", "weekday"))
+datacomplete$timeperiod = as.factor(datacomplete$timeperiod)
+head(datacomplete)
+intcomplete = datacomplete %>%
+  group_by(interval, timeperiod) %>%
+  summarize(steps = mean(steps))
+
+s = ggplot(intcomplete, aes(x=interval, y=steps, color = timeperiod)) +
+  geom_line() +
+  facet_wrap(~timeperiod, ncol = 1, nrow=2)
+print(s)
+
+```
