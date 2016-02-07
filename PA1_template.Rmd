@@ -59,6 +59,7 @@ interval = data %>%
   filter(!is.na(steps)) %>%
   group_by(interval) %>%
   summarize(steps = mean(steps))
+print
 ```
 
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
@@ -128,9 +129,9 @@ intcomplete = datacomplete %>%
   group_by(interval, timeperiod) %>%
   summarize(steps = mean(steps))
 
-s = ggplot(intcomplete, aes(x=interval, y=steps, color = timeperiod)) +
+ggplot(intcomplete, aes(x=interval, y=steps, color = timeperiod)) +
   geom_line() +
   facet_wrap(~timeperiod, ncol = 1, nrow=2)
-print(s)
+
 
 ```
