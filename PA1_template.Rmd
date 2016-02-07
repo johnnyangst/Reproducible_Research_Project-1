@@ -1,0 +1,44 @@
+---
+title: "Reproducible Research - Course Project 1"
+author: "John Kirker"
+date: "February 6, 2016"
+output: html_document
+---
+
+##Load and preprocess the data
+
+```{r}
+data = read.csv("activity.csv")
+```
+
+##Clean the data
+
+```{r, echo = TRUE}
+data$day = weekdays(as.Date(data$date))
+data$DateTime = as.POSIXct(data$date, format = "%Y-%m-%d")
+head(data)
+```
+Remove NA's
+```{r, echo = TRUE}
+cleandata = data[!is.na(data$steps),]
+head(cleandata)
+```
+Process data for plotting
+```{r, echo = TRUE}
+library(dplyr)
+steps = cleandata %>%
+  filter(!is.na(steps)) %>%
+  group_by(date) %>%
+  summarize(steps = sum(steps)) %>%
+  print
+
+```
+Plot histogram - frequency of steps per day
+```{r, echo = TRUE}
+library(ggplot2)
+ggplot(steps, aes(x = steps)) +
+  geom_histogram(fill = "green", binwidth = 1000) +
+  labs(title = "Histogram of Steps per day", x = "Steps per day", y = "Frequency")
+```
+
+##What is mean total number of steps taken per day?
